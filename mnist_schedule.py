@@ -33,10 +33,12 @@ class Network(object):
 					print "Train Epoch {0}: {1} / {2}".format(count,eval_train, n)
 					train_loss.append(eval_train)
 
+				if count % 250 == 0:
+
+					eta = eta*0.85
+
 		print "train-acc",train_loss
 		print "\ntest-acc",test_loss
-		print "\nweights",self.weights
-		print "\nbiases",self.biases
 
 # updating the parameters
 	def update(self,mini_batches,eta):

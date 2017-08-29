@@ -35,8 +35,6 @@ class Network(object):
 
 		print "train-acc",train_loss
 		print "\ntest-acc",test_loss
-		print "\nweights",self.weights
-		print "\nbiases",self.biases
 
 # updating the parameters
 	def update(self,mini_batches,eta):
@@ -167,5 +165,5 @@ if __name__=='__main__':
 	print train[0][1]
 	net=Network([784,1000,500,250,10])
 	#print [(np.argmax(net.feedforward(x.reshape(784,1)),y.reshape(10,1))) for (x,y) in test]
-	net.gradient_descend(train,test,3,64,0.01)
+	net.gradient_descend(train,test,3,64,0.1)
 	#epoch,minib

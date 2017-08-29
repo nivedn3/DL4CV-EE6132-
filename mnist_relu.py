@@ -11,18 +11,30 @@ class Network(object):
 			n_test=len(test_data)
 		n=len(training_data)
 		print n
-
+		test_loss = []
+		train_loss = []
 		for j in xrange(epochs):	
 			#random.shuffle(training_data)
 			mini_batches=[training_data[w:w+mini_batch_length] for w in xrange(0,n,mini_batch_length)]
 			for i in mini_batches:
 				self.update(i,eta)
-			if test_data:
-				print "Epoch {0}: {1} / {2}".format(j, self.evaluate(test_data), n_test)
-			else:
-				print "Epoch {0} complete".format(j)
+			if j % 50 == 0:
+				if test_data:
+					eval_test = self.evaluate(test_data)
+					print "Epoch {0}: {1} / {2}".format(j,eval_test, n_test)
+					test_loss.append(eval_test)
+				else:
+					print "Epoch {0} complete".format(j)
+				eval_train = self.evaluate(training_data)
+				train_loss.append(eval_train)
+				file = open("testrelu.txt",'w')
+				file.write(str(train_loss))
+				file.write("/")
+				file.write(str(test_loss))
+				file.close()
 # updating the parameters
 	def update(self,mini_batches,eta):
+
 		derb=[np.zeros(b.shape) for b in self.biases]
 		derw=[np.zeros(w.shape) for w in self.weights]
 		velow = [np.zeros(w.shape) for w in self.weights]
@@ -125,11 +137,15 @@ class Network(object):
 		
 
 def sig(n):
-	return 1.0/(1.0+np.exp(-n))
+
+	return n.clip(min = 0)
 
 def sig_prime(n):
-	return sig(n)*(1-sig(n))
 
+	l = n.clip(min = 0)
+	l[l==0] = 1.33e-100
+	l[l>0] = 1
+	return l
 
 if __name__=='__main__':
 
@@ -143,12 +159,12 @@ if __name__=='__main__':
 	import tensorflow as tf
 	from tensorflow.examples.tutorials.mnist import input_data
 	mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
-	training_data = mnist.train.next_batch(10000)
-	test_data = mnist.test.next_batch(1000)
+	training_data = mnist.train.next_batch(100)
+	test_data = mnist.test.next_batch(10)
 	train = data_parser(training_data)
 	test = data_parser(test_data)
 	print train[0][1]
 	net=Network([784,1000,500,250,10])
 	#print [(np.argmax(net.feedforward(x.reshape(784,1)),y.reshape(10,1))) for (x,y) in test]
-	net.gradient_descend(train,test,2000,50,0.01)
+	net.gradient_descend(train,test,200,50,0.01)
 	#epoch,minib
