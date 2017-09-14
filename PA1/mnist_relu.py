@@ -13,28 +13,27 @@ class Network(object):
 		print n
 		test_loss = []
 		train_loss = []
-		for j in xrange(epochs):	
-			#random.shuffle(training_data)
+		count = 0
+		for j in xrange(3):	
+			random.shuffle(training_data)
 			mini_batches=[training_data[w:w+mini_batch_length] for w in xrange(0,n,mini_batch_length)]
 			for i in mini_batches:
 				self.update(i,eta)
-			if j % 50 == 0:
-				if test_data:
-					eval_test = self.evaluate(test_data)
-					print "Epoch {0}: {1} / {2}".format(j,eval_test, n_test)
-					test_loss.append(eval_test)
-				else:
-					print "Epoch {0} complete".format(j)
-				eval_train = self.evaluate(training_data)
-				train_loss.append(eval_train)
-				file = open("testrelu.txt",'w')
-				file.write(str(train_loss))
-				file.write("/")
-				file.write(str(test_loss))
-				file.close()
+
+				count = count + 1
+
+				
+
+		l = test_data[:20]
+		k = [net.feedforward(x.reshape(784,1)) for (x,y) in l]
+		
+		print k
+
+		p = [y.reshape(10,1) for (x,y) in l]
+		print p
+
 # updating the parameters
 	def update(self,mini_batches,eta):
-
 		derb=[np.zeros(b.shape) for b in self.biases]
 		derw=[np.zeros(w.shape) for w in self.weights]
 		velow = [np.zeros(w.shape) for w in self.weights]
@@ -54,13 +53,13 @@ class Network(object):
 		velob = [alpha*v - (eta/len(mini_batches))*c for v,c in zip(velob,derb)]
 
 		self.biases = [b + v for b,v in zip(self.biases,velob)]
-	def evaluate(self,test_data):
+	def evaluate(self,t_data):
 		#test_r=[(np.argmax(self.feedforward(x),y)) for (x,y) in test_data]
-		k = [net.feedforward(x.reshape(784,1)) for (x,y) in test]
+		k = [net.feedforward(x.reshape(784,1)) for (x,y) in t_data]
 		j = []
 		for i in k:
 			j.append(np.argmax(i))
-		pi = [y.reshape(10,1) for (x,y) in test]
+		pi = [y.reshape(10,1) for (x,y) in t_data]
 		p = []
 		for i in pi:
 			p.append(np.argmax(i))
@@ -147,6 +146,7 @@ def sig_prime(n):
 	l[l>0] = 1
 	return l
 
+
 if __name__=='__main__':
 
 	def data_parser(x):
@@ -159,12 +159,12 @@ if __name__=='__main__':
 	import tensorflow as tf
 	from tensorflow.examples.tutorials.mnist import input_data
 	mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
-	training_data = mnist.train.next_batch(100)
-	test_data = mnist.test.next_batch(10)
+	training_data = mnist.train.next_batch(55000)
+	test_data = mnist.test.next_batch(10000)
 	train = data_parser(training_data)
 	test = data_parser(test_data)
 	print train[0][1]
 	net=Network([784,1000,500,250,10])
 	#print [(np.argmax(net.feedforward(x.reshape(784,1)),y.reshape(10,1))) for (x,y) in test]
-	net.gradient_descend(train,test,200,50,0.01)
+	net.gradient_descend(train,test,3,64,0.01)
 	#epoch,minib
