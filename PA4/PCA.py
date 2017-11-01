@@ -53,10 +53,10 @@ with tf.name_scope("accuracy"):
   #tf.summary.scalar('accuracy',accuracy)
 
 merged_summary = tf.summary.merge_all()
-writer = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA3/11")
+writer = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/pca_train")
 writer.add_graph(sess.graph)
 
-writer2 = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA3/11")
+writer2 = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/pca_test")
 writer2.add_graph(sess.graph)
 
 sess.run(tf.global_variables_initializer())

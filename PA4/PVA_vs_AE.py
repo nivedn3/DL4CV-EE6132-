@@ -35,17 +35,17 @@ db_4 = tf.Variable(tf.random_normal([784]))
 def encoder(x):
 
 	en1 = tf.nn.sigmoid(tf.matmul(x,ew_1) + eb_1)
-	en2 = tf.nn.sigmoid(tf.matmul(n1,ew_2) + eb_2)
-	en3 = tf.nn.sigmoid(tf.matmul(n3,ew_3) + eb_3)
-	en4 = tf.nn.sigmoid(tf.matmul(n4,ew_4) + eb_4)
+	en2 = tf.nn.sigmoid(tf.matmul(en1,ew_2) + eb_2)
+	en3 = tf.nn.sigmoid(tf.matmul(en2,ew_3) + eb_3)
+	en4 = tf.nn.sigmoid(tf.matmul(en3,ew_4) + eb_4)
 	return en4
 
 def decoder(x):
 
 	dn1 = tf.nn.sigmoid(tf.matmul(x,dw_1) + db_1)
-	dn2 = tf.nn.sigmoid(tf.matmul(dw_1,dw_2) + db_2)
-	dn3 = tf.nn.sigmoid(tf.matmul(dw_2,dw_3) + db_3)
-	dn4 = tf.nn.sigmoid(tf.matmul(dw_3,dw_4) + db_4)
+	dn2 = tf.nn.sigmoid(tf.matmul(dn1,dw_2) + db_2)
+	dn3 = tf.nn.sigmoid(tf.matmul(dn2,dw_3) + db_3)
+	dn4 = tf.nn.sigmoid(tf.matmul(dn3,dw_4) + db_4)
 	return dn4
 
 en_out = encoder(x)
@@ -54,7 +54,6 @@ de_out = decoder(en_out)
 with tf.name_scope("loss"):
 
   loss = tf.reduce_mean(tf.pow(de_out - x,2))
-  #loss = tf.reduce_mean(cross_entropy + 0.01 * regularizer)
   tf.summary.scalar('loss',loss)
 
 with tf.name_scope("train"):
@@ -68,10 +67,10 @@ with tf.name_scope("accuracy"):
   tf.summary.scalar('accuracy',accuracy)
 
 merged_summary = tf.summary.merge_all()
-writer = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA3/11")
+writer = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/pav_train")
 writer.add_graph(sess.graph)
 
-writer2 = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA3/11")
+writer2 = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/pav_test")
 writer2.add_graph(sess.graph)
 
 sess.run(tf.global_variables_initializer())

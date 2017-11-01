@@ -6,16 +6,16 @@ sess = tf.InteractiveSession()
 x = tf.placeholder(tf.float32,shape = [None,784])
 
 #layers
-l_1 = tf.Variable("weight",dtype=tf.int32,initializer = tf.constant(100))
+l_1 = tf.Variable(dtype=tf.int32,initializer = tf.constant(100),name = "n_size")
 tf.summary.scalar("weight",l_1)
 
-ew_1 = tf.Variable(tf.random_normal([784, l_1]))
+ew_1 = tf.Variable(tf.random_normal([784, l_1]),name = "ew_1")
 
-dw_1 = tf.Variable(tf.random_normal([l_1, 784]))
+dw_1 = tf.Variable(tf.random_normal([l_1, 784]),name = "dw_1")
 
-eb_1 = tf.Variable(tf.random_normal([l_1]))
+eb_1 = tf.Variable(tf.random_normal([l_1]), name =  "eb_1")
 
-db_1 = tf.Variable(tf.random_normal([784]))
+db_1 = tf.Variable(tf.random_normal([784]),name = "db_1")
 
 
 def encoder(x):
@@ -48,11 +48,13 @@ with tf.name_scope("accuracy"):
   tf.summary.scalar('accuracy',accuracy)
 
 merged_summary = tf.summary.merge_all()
-writer = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA3/11")
+writer = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/st_train")
 writer.add_graph(sess.graph)
 
-writer2 = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA3/11")
+writer2 = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/st_test")
 writer2.add_graph(sess.graph)
+
+saver = tf.train.Saver()
 
 sess.run(tf.global_variables_initializer())
 
@@ -69,7 +71,10 @@ for i in range(20000):
 		s2 = sess.run(merged_summary,feed_dict = {x:batch2[0]} )
 		writer2.add_summary(s2,i)
 
+	#saver.restore(sess, "/home/psycholearner/projects//DL4CV-EE6132-/PA4/st_model.ckpt")
+  	save_path = saver.save(sess, "/home/psycholearner/projects/DL4CV-EE6132-/PA4/st_model.ckpt")
 	sess.run(train_step, feed_dict={x: batch[0]})
 
+
 test_batch = mnist.test.next_batch(10000)
-print("Testing Accuracy:",sess.run([accuracy], feed_dict={x: test_data, y: test_label}))
+print("Testing Accuracy:",sess.run([accuracy], feed_dict={x: test_batch[0]}))
