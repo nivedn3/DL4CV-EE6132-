@@ -4,6 +4,8 @@ mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 sess = tf.InteractiveSession()
 
 x = tf.placeholder(tf.float32,shape = [None,784])
+x_int = tf.reshape(x,[-1,28,28,1])
+tf.summary.image("int",x_int)
 
 #layers
 l_1 = 30
@@ -31,7 +33,11 @@ def decoder(x):
 	return dn1
 
 en_out = encoder(x)
+
 de_out = decoder(en_out)
+
+d_out2 = tf.reshape(de_out,[-1,28,28,1])
+tf.summary.image("dout",d_out2)
 
 with tf.name_scope("loss"):
 
@@ -79,3 +85,4 @@ for i in range(20000):
 	
 test_batch = mnist.test.next_batch(10000)
 print("Testing Accuracy:",sess.run([accuracy], feed_dict={x: test_batch[0]}))
+print("\nTesting Loss:",sess.run([loss], feed_dict={x: test_batch[0]}))
