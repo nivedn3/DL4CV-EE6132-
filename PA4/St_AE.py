@@ -4,10 +4,10 @@ mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 sess = tf.InteractiveSession()
 
 x = tf.placeholder(tf.float32,shape = [None,784])
-
+x_image = tf.reshape(x,shape = [-1,28,28,1])
+tf.summary.image('input',x_image,3)
 #layers
-l_1 = tf.Variable(dtype=tf.int32,initializer = tf.constant(100),name = "n_size")
-tf.summary.scalar("weight",l_1)
+l_1 = 256
 
 ew_1 = tf.Variable(tf.random_normal([784, l_1]),name = "ew_1")
 
@@ -30,6 +30,8 @@ def decoder(x):
 
 en_out = encoder(x)
 de_out = decoder(en_out)
+en_image = tf.reshape(de_out,shape=[-1,28,28,1])
+tf.summary.image('out',en_image,3)
 
 with tf.name_scope("loss"):
 
@@ -48,8 +50,8 @@ with tf.name_scope("accuracy"):
   tf.summary.scalar('accuracy',accuracy)
 
 merged_summary = tf.summary.merge_all()
-writer = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/st_train")
-writer.add_graph(sess.graph)
+#writer = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/st_train")
+#writer.add_graph(sess.graph)
 
 writer2 = tf.summary.FileWriter("/home/psycholearner/projects/DL4CV-EE6132-/PA4/st_test")
 writer2.add_graph(sess.graph)
@@ -58,7 +60,9 @@ saver = tf.train.Saver()
 
 sess.run(tf.global_variables_initializer())
 
-for i in range(20000):
+saver.restore(sess, "/home/psycholearner/projects//DL4CV-EE6132-/PA4/st_model.ckpt")
+'''
+for i in range(10000):
 
 	batch = mnist.train.next_batch(50)
 	
@@ -72,9 +76,10 @@ for i in range(20000):
 		writer2.add_summary(s2,i)
 
 	#saver.restore(sess, "/home/psycholearner/projects//DL4CV-EE6132-/PA4/st_model.ckpt")
-  	save_path = saver.save(sess, "/home/psycholearner/projects/DL4CV-EE6132-/PA4/st_model.ckpt")
 	sess.run(train_step, feed_dict={x: batch[0]})
 
-
-test_batch = mnist.test.next_batch(10000)
-print("Testing Accuracy:",sess.run([accuracy], feed_dict={x: test_batch[0]}))
+save_path = saver.save(sess, "/home/psycholearner/projects/DL4CV-EE6132-/PA4/st_model.ckpt")
+'''
+test_batch = mnist.test.next_batch(3)
+s2 = sess.run(merged_summary,feed_dict = {x:test_batch[0]})
+writer2.add_summary(s2,1)
